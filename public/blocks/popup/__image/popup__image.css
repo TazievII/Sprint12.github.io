@@ -1,0 +1,18 @@
+#popupcontent {
+    max-height: 80vh;
+    max-width: 80vw;
+    padding: 0px;
+    background-color: #fff;
+    border-radius: 5%;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+.popup__image {
+    max-height: 80vh;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    border-radius: 11px;
+    background-position: center;
+    border-radius: 5%;
+}

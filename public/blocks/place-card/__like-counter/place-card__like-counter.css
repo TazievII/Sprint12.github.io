@@ -1,0 +1,10 @@
+.place-card__button-counter {
+    display: flex;
+    flex-direction: column;
+}
+
+.place-card__like-counter {
+    margin: 0;
+    text-align: center;
+    margin-top: 2px;
+}
