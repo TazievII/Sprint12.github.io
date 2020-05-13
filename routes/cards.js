@@ -1,7 +1,14 @@
-const cardsJson = require('../data/cards.json');
+const cardsRouter = require('express').Router();
 
-function cards(res) {
-  res.status(200).send(cardsJson);
-}
+const cards = require('../data/cards.json');
 
-module.exports = cards;
+cardsRouter.get('/', (req, res) => {
+  res.status(200).send(cards);
+});
+
+cardsRouter.all('/:id', (req, res) => {
+  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
+});
+
+
+module.exports = cardsRouter;

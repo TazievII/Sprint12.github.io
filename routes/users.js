@@ -1,18 +1,23 @@
-const usersBase = require('../data/users.json');
+const usersRouter = require('express').Router();
 
-function users(res) {
-  res.send(usersBase);
-}
+const users = require('../data/users.json');
+
+usersRouter.get('/', (req, res) => {
+  res.send(users);
+});
+
+usersRouter.get('/:id', (req, res) => {
+  const user = users.find((item) => item._id === req.params.id);
+  if (user) {
+    res.status(200).send(user);
+    return;
+  }
+  res.status(404).send({ message: 'Такого пользователя нет' });
+});
+
+usersRouter.all('/:id/:id', (req, res) => {
+  return res.status(404).send({ message: 'Запрашиваемый ресурс не найден' })
+});
 
 
-function searchUser(req, res) {
-  usersBase.find((element) => {
-    if (element._id === req.params.id) {
-      const current = element;
-      return res.status(200).send(current);
-    } return undefined;
-  });
-}
-
-
-module.exports = { users, searchUser };
+module.exports = usersRouter;
