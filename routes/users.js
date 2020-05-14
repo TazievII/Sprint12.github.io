@@ -15,9 +15,9 @@ usersRouter.get('/:id', (req, res) => {
   res.status(404).send({ message: 'Такого пользователя нет' });
 });
 
-usersRouter.all('/:id/:id', (req, res) => {
+/* usersRouter.all('/:id/:id', (req, res) => {
   return res.status(404).send({ message: 'Запрашиваемый ресурс не найден' })
-});
+}); */
 
 
 module.exports = usersRouter;

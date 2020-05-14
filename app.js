@@ -6,8 +6,8 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
-app.use('/', routes);
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/', routes);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
