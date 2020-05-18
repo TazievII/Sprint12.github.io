@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Mesto</title>
+  <!--<link rel="stylesheet" href="./pages/index.css">-->
+  <link href="style.aa768a552975827ff049.css" rel="stylesheet"></head>
+<body>
+  <div class="root">
+    <header class="header root__section">
+      <img src="images/logo.svg" alt="mesto logo" class="logo">
+    </header>
+    <div class="profile root__section">
+      <div class="user-info">
+        <div class="user-info__photo"></div>
+        <div class="user-info__data">
+          <h1 class="user-info__name"></h1>
+          <p class="user-info__job"></p>
+          <button type class="user-info__editbutton">Edit</button>
+        </div>
+        <button class="button user-info__button">+</button>
+      </div>
+    </div>
+    <div class="places-list root__section">
+
+    </div>
+    <div id="popup1" class="popup edit-profile">
+      <div class="popup__content">
+        <img src="images/close.svg" alt="" class="popup__close popup1close">
+        <h3 class="popup__title">Редактировать профиль</h3>
+        <form class="popup__form" name="edit">
+            <input type="text" min="2" max="30" name="firstname" class="popup__input popup__input_type_firstname" placeholder="Имя" required>
+            <p id="firstnamevalidation" class="popup__validation"></p>
+            <input type="text" min="2" max="30" name="about" class="popup__input popup__input_type_about" placeholder="О себе" required>
+            <p id="aboutvalidation" class="popup__validation"></p>
+            <button type id="saveButton" class="button popup__edit-profile-button">Сохранить</button>
+        </form>
+      </div>
+    </div>
+    <div id="popup2" class="popup add-card">
+      <div class="popup__content">
+        <img src="images/close.svg" alt="" class="popup__close popup2close">
+        <h3 class="popup__title">Новое место</h3>
+        <form class="popup__form" name="new">
+            <input type="text" min="2" max="30" name="name" class="popup__input popup__input_type_name" placeholder="Название" required>
+            <p class="name-validation"></p>
+            <input type="URL" min="2" max="30" name="link" class="popup__input popup__input_type_link-url" placeholder="Ссылка на картинку" required>
+            <p class="link-validation"></p>
+            <button type id="saveButton" class="button popup__button popup__button_disabled">+</button>
+        </form>
+      </div>
+    </div>
+    <div id="popup3" class="popup">
+      <div id="popupcontent" class="popup__content-image">
+        <img src="images/close.svg" alt="" class="popup__close popup3close">
+        <img class="popup__image">
+      </div>
+    </div>
+  </div>
+<script src="main.a79ecb9b5d617bf33aab.js"></script></body>
+</html>
