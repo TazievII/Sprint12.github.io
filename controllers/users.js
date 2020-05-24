@@ -18,6 +18,9 @@ module.exports.createUser = (req, res) => {
 module.exports.findUser = (req, res) => {
   User.findById(req.params.id)
     .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'Пользователь не найден' });
+      }
       res.send({ data: user });
     })
     .catch((err) => res.status(500).send({ message: err.message }));
@@ -27,7 +30,7 @@ module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Ошибка' }));
+    .catch((err) => res.status(500).send({ message: err.message }));
 };
 
 module.exports.updateUserAvatar = (req, res) => {
