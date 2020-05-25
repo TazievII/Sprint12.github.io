@@ -1,3 +1,4 @@
+const validator = require('validator');
 const Card = require('../models/card');
 
 module.exports.getCards = (req, res) => {
@@ -15,8 +16,18 @@ module.exports.createCard = (req, res) => {
   Card.create({
     name, link, owner: req.user._id, createdAt,
   })
-    .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((card) => {
+      if (validator.isURL(link)) {
+        res.status(200).send({ data: card });
+      } else res.status(412).send({ message: 'Некорректная ссылка на картинку' });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: err.message });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.deleteCard = (req, res) => {
