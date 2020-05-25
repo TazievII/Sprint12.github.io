@@ -21,7 +21,6 @@ app.use((req, res, next) => {
   req.user = {
     _id: '5ec6b52463df8308c0c5607e', // вставьте сюда _id созданного в предыдущем пункте пользователя
   };
-
   next();
 });
 app.use(express.static(path.join(__dirname, 'public')));
