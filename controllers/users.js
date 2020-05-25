@@ -15,7 +15,7 @@ module.exports.createUser = (req, res) => {
     .then((user) => {
       if (validator.isURL(avatar)) {
         res.send({ data: user });
-      } else res.status(412).send({ message: 'Ошибка в ссылке на аватар' });
+      } else res.status(400).send({ message: 'Ошибка в ссылке на аватар' });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -55,7 +55,7 @@ module.exports.updateUserAvatar = (req, res) => {
     .then((user) => {
       if (validator.isURL(avatar)) {
         res.send({ data: user });
-      } else res.status(412).send({ message: 'Ошибка в ссылке на аватар' });
+      } else res.status(400).send({ message: 'Ошибка в ссылке на аватар' });
     })
     .catch((err) => res.status(500).send({ message: err.message }));
 };

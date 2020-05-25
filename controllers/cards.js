@@ -19,7 +19,7 @@ module.exports.createCard = (req, res) => {
     .then((card) => {
       if (validator.isURL(link)) {
         res.status(200).send({ data: card });
-      } else res.status(412).send({ message: 'Некорректная ссылка на картинку' });
+      } else res.status(400).send({ message: 'Некорректная ссылка на картинку' });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
