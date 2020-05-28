@@ -24,7 +24,13 @@ module.exports.createUser = (req, res) => {
     }))
     .then((user) => {
       if (validator.isURL(avatar)) {
-        res.send({ data: user });
+        res.status(201).send({
+          _id: user._id,
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
+        });
       } else res.status(400).send({ message: 'Ошибка в ссылке на аватар' });
     })
     .catch((err) => {
