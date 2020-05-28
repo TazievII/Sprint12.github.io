@@ -1,8 +1,9 @@
-const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const auth = require('./middlewares/auth');
 const routes = require('./routes/routes.js');
+const { login, createUser } = require('./controllers/users');
 // Слушаем 3000 порт
 const { PORT = 3000 } = process.env;
 
@@ -17,13 +18,10 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '5ec6b52463df8308c0c5607e', // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
-  next();
-});
-app.use(express.static(path.join(__dirname, 'public')));
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+app.use(auth);
 app.use('/', routes);
 
 app.listen(PORT, () => {
