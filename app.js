@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const auth = require('./middlewares/auth');
@@ -6,6 +7,7 @@ const routes = require('./routes/routes.js');
 const { login, createUser } = require('./controllers/users');
 // Слушаем 3000 порт
 const { PORT = 3000 } = process.env;
+
 
 const app = express();
 
