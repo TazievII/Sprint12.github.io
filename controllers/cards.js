@@ -31,11 +31,13 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Карточка не найдена' });
-      } else res.send({ data: card });
+      } else if (card.owner === req.user._id) {
+        card.remove(req.params.cardId);
+      } return Promise.reject(new Error({ message: 'Недостаточно прав' }));
     })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
