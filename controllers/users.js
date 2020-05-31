@@ -17,32 +17,34 @@ module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
-    .then((user) => {
-      if (validator.isURL(avatar)) {
-        res.status(201).send({
-          _id: user._id,
-          name: user.name,
-          about: user.about,
-          avatar: user.avatar,
-          email: user.email,
-        });
-      } else res.status(400).send({ message: 'Ошибка в ссылке на аватар' });
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: err.message });
-      } else {
-        res.status(500).send({ message: err.message });
-      }
-    });
+  if (password.length >= 8) {
+    bcrypt.hash(password, 10)
+      .then((hash) => User.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      }))
+      .then((user) => {
+        if (validator.isURL(avatar)) {
+          res.status(201).send({
+            _id: user._id,
+            name: user.name,
+            about: user.about,
+            avatar: user.avatar,
+            email: user.email,
+          });
+        } else res.status(400).send({ message: 'Ошибка в ссылке на аватар' });
+      })
+      .catch((err) => {
+        if (err.name === 'ValidationError') {
+          res.status(400).send({ message: err.message });
+        } else {
+          res.status(500).send({ message: err.message });
+        }
+      });
+  } else res.status(400).send({ message: 'Пароль слишком короткий' });
 };
 
 module.exports.login = (req, res) => {
