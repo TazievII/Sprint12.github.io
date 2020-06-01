@@ -17,7 +17,7 @@ module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (password.length >= 8) {
+  if (password.trim().length >= 8) {
     bcrypt.hash(password, 10)
       .then((hash) => User.create({
         name,
@@ -38,10 +38,12 @@ module.exports.createUser = (req, res) => {
         } else res.status(400).send({ message: 'Ошибка в ссылке на аватар' });
       })
       .catch((err) => {
-        if (err.name === 'ValidationError') {
-          res.status(400).send({ message: err.message });
+        if (err.errors.email.properties.type === 'unique') {
+          res.status(409).send({ message: 'Пользователь с таким email уже существует' });
+        } if (err.name === 'ValidationError') {
+          res.status(400).send({ message: 'Ошибка в данных' });
         } else {
-          res.status(500).send({ message: err.message });
+          res.status(500).send({ message: err._message });
         }
       });
   } else res.status(400).send({ message: 'Пароль слишком короткий' });
@@ -60,7 +62,7 @@ module.exports.login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+      res.status(401).send({ message: err._message });
     });
 };
 
@@ -71,7 +73,7 @@ module.exports.findUser = (req, res) => {
         res.status(404).send({ message: 'Пользователь не найден' });
       } else res.send({ data: user });
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => res.status(500).send({ message: err._message }));
 };
 
 module.exports.updateUser = (req, res) => {
@@ -80,9 +82,9 @@ module.exports.updateUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: err.message });
+        res.status(400).send({ message: err._message });
       } else {
-        res.status(500).send({ message: err.message });
+        res.status(500).send({ message: err._message });
       }
     });
 };
@@ -95,5 +97,5 @@ module.exports.updateUserAvatar = (req, res) => {
         res.send({ data: user });
       } else res.status(400).send({ message: 'Ошибка в ссылке на аватар' });
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => res.status(500).send({ message: err._message }));
 };
