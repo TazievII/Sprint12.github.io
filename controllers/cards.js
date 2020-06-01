@@ -37,7 +37,10 @@ module.exports.deleteCard = (req, res) => {
         res.status(404).send({ message: 'Карточка не найдена' });
       } else if (card.owner === req.user._id) {
         card.remove(req.params.cardId);
-      } return Promise.reject(new Error({ message: 'Недостаточно прав' }));
+        res.status(200).send(card);
+      } else {
+        res.status(403).send({ message: 'Нет прав на удаление карточки' });
+      }
     })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
