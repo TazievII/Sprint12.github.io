@@ -5,11 +5,24 @@
 Установлено: 
 1. Eslint
 2. Nodemon
-3. Express, body-parser, mongoose, validator
-4. Api get users / cards / userId / cardsId , delete cardsId, patch user
+3. Express, body-parser, mongoose, validator, bcrypt, jwt
+4. Api get users / cards / userId / cardsId , delete cardsId, patch user, signin, signup, auth
 ## Taziev Ilya 
 (tazievii@gmail.com)
 
+## Sighin
+### Авторизация
+### URL /signin
+### Method: POST
+### Успех запроса: token
+Code: 200
+
+## Signup
+### Регистрация
+### URL /signup
+### Method: POST
+### Успех запроса: 
+Code 200, JSON - _id: user._id, name: user.name, about: user.about, avatar: user.avatar, email: user.email,
 
 ## Show Users 
 ### Возвращает всех пользователей
