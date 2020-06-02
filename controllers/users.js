@@ -10,7 +10,7 @@ module.exports.getUsers = (req, res) => {
   User.find({})
     .populate('user')
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => res.status(500).send({ message: err._message }));
 };
 
 module.exports.createUser = (req, res) => {
