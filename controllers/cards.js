@@ -35,14 +35,14 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Карточка не найдена' });
-      } else if (card.owner === req.user._id) {
+      } else if (toString(card.owner) === toString(req.user._id)) {
         card.remove(req.params.cardId);
-        res.status(200).send(card);
+        res.status(200).send({ message: 'Удалено' });
       } else {
         res.status(403).send({ message: 'Нет прав на удаление карточки' });
       }
     })
-    .catch((err) => res.status(500).send({ message: err._message }));
+    .catch((err) => res.status(500).send({ message: err.message }));
 };
 
 module.exports.likeCard = (req, res) => {
