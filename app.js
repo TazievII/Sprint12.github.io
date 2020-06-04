@@ -1,4 +1,6 @@
 const cookieParser = require('cookie-parser');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 const express = require('express');
 require('dotenv').config();
 const mongoose = require('mongoose');
@@ -12,6 +14,11 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -21,6 +28,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
+app.use(limiter);
+app.use(helmet);
 app.post('/signin', login);
 app.post('/signup', createUser);
 
