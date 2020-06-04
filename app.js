@@ -1,3 +1,4 @@
+const cookieParser = require('cookie-parser');
 const express = require('express');
 require('dotenv').config();
 const mongoose = require('mongoose');
@@ -23,6 +24,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 app.post('/signin', login);
 app.post('/signup', createUser);
 
+app.use(cookieParser());
 app.use(auth);
 app.use('/', routes);
 
