@@ -13,6 +13,9 @@ module.exports.createCard = (req, res) => {
   const {
     name, link, createdAt,
   } = req.body;
+  if (name.length < 2 || name.length > 30) {
+    res.status(400).send({ message: 'Недопустимое значение (от 2 до 30 символов)' });
+  }
   Card.create({
     name, link, owner: req.user._id, createdAt,
   })
