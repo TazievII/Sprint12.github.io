@@ -33,9 +33,10 @@ module.exports.createCard = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   Card.findById(req.params.cardId)
     .then((card) => {
+      const newLocal = toString(card.owner) === toString(req.user._id);
       if (!card) {
         res.status(404).send({ message: 'Карточка не найдена' });
-      } else if (toString(card.owner) === toString(req.user._id)) {
+      } else if (newLocal) {
         card.remove(req.params.cardId);
         res.status(200).send({ message: 'Удалено' });
       } else {
