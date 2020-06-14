@@ -13,10 +13,14 @@ module.exports.getUsers = (req, res) => {
     .catch((err) => res.status(500).send({ message: err._message }));
 };
 
+// eslint-disable-next-line consistent-return
 module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
+  if (name.length < 2 || name.length > 30 || about.length < 2 || about.length > 30) {
+    return res.send({ message: 'Недопустимое значение (от 2 до 30 символов)' });
+  }
   if (password.trim().length >= 8) {
     bcrypt.hash(password, 10)
       .then((hash) => User.create({
@@ -39,14 +43,12 @@ module.exports.createUser = (req, res) => {
       })
       .catch((err) => {
         if (err.errors.email.properties.type === 'unique') {
-          res.status(409).send({ message: 'Пользователь с таким email уже существует' });
+          return res.status(409).send({ message: 'Пользователь с таким email уже существует' });
         } if (err.name === 'ValidationError') {
-          res.status(400).send({ message: 'Ошибка в данных' });
-        } else {
-          res.status(500).send({ message: err._message });
-        }
+          return res.status(400).send({ message: 'Ошибка в данных' });
+        } return res.status(500).send({ message: err.message });
       });
-  } else res.status(400).send({ message: 'Пароль слишком короткий' });
+  } else res.status(400).send({ message: 'Ошибка в данных' });
 };
 
 module.exports.login = (req, res) => {
@@ -82,8 +84,12 @@ module.exports.findUser = (req, res) => {
     .catch((err) => res.status(500).send({ message: err._message }));
 };
 
+// eslint-disable-next-line consistent-return
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
+  if (name.length < 2 || name.length > 30 || about.length < 2 || about.length > 30) {
+    return res.send({ message: 'Недопустимое значение (от 2 до 30 символов)' });
+  }
   User.findByIdAndUpdate(req.user._id, { name, about })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
