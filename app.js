@@ -30,7 +30,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 app.use(limiter);
-app.use(helmet);
+app.use(helmet());
 app.use(requestLogger);
 app.post('/signin', login);
 app.post('/signup', createUser);
