@@ -48,7 +48,9 @@ module.exports.createUser = (req, res) => {
           return res.status(400).send({ message: 'Ошибка в данных' });
         } return res.status(500).send({ message: err.message });
       });
-  } else res.status(400).send({ message: 'Ошибка в данных' });
+  } else if (password.trim().length < 8) {
+    return res.status(400).send({ message: 'Пароль не может быть менее 8 символов' });
+  }
 };
 
 module.exports.login = (req, res) => {
