@@ -3,14 +3,16 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const express = require('express');
 require('dotenv').config();
+const { Joi, celebrate, errors } = require('celebrate');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const auth = require('./middlewares/auth');
 const routes = require('./routes/routes.js');
 const { login, createUser } = require('./controllers/users');
+const { errorMiddleware } = require('./middlewares/error');
 // Слушаем 3001 порт
-const { PORT = 3001 } = process.env;
+const { PORT = 3010 } = process.env;
 
 
 const app = express();
@@ -29,18 +31,48 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
+const error = (req, res, next) => {
+  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
+
+  next();
+};
+
 app.use(limiter);
 app.use(helmet());
 app.use(requestLogger);
-app.post('/signin', login);
-app.post('/signup', createUser);
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+  }),
+}), login);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
+    avatar: Joi.string().required(),
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(6),
+  }),
+}), createUser);
 
 app.use(cookieParser());
 app.use(auth);
 app.use('/', routes);
 
 app.use(errorLogger);
+app.use('*', error);
+app.use(errors());
+app.use(errorMiddleware);
 
 app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`App listening on port ${PORT}`);
 });

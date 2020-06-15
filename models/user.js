@@ -39,6 +39,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.plugin(uniqueValidator);
 
+// eslint-disable-next-line func-names
 userSchema.statics.findUserByEmail = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {

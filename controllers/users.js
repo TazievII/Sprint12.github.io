@@ -1,10 +1,11 @@
 const bcrypt = require('bcryptjs');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
+
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-
+const NotFound = require('../errors/notfound');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -18,9 +19,6 @@ module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (name.length < 2 || name.length > 30 || about.length < 2 || about.length > 30) {
-    return res.send({ message: 'Недопустимое значение (от 2 до 30 символов)' });
-  }
   if (password.trim().length >= 8) {
     bcrypt.hash(password, 10)
       .then((hash) => User.create({
@@ -39,15 +37,10 @@ module.exports.createUser = (req, res) => {
             avatar: user.avatar,
             email: user.email,
           });
-        } else res.status(400).send({ message: 'Ошибка в ссылке на аватар' });
+          return;
+        } Promise.reject();
       })
-      .catch((err) => {
-        if (err.errors.email.properties.type === 'unique') {
-          return res.status(409).send({ message: 'Пользователь с таким email уже существует' });
-        } if (err.name === 'ValidationError') {
-          return res.status(400).send({ message: 'Ошибка в данных' });
-        } return res.status(500).send({ message: err.message });
-      });
+      .catch(next);
   } else if (password.trim().length < 8) {
     return res.status(400).send({ message: 'Пароль не может быть менее 8 символов' });
   }
@@ -80,10 +73,10 @@ module.exports.findUser = (req, res) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Пользователь не найден' });
-      } else res.send({ data: user });
+        throw new NotFound('Пользователь не найден');
+      } res.send({ data: user });
     })
-    .catch((err) => res.status(500).send({ message: err._message }));
+    .catch(next);
 };
 
 // eslint-disable-next-line consistent-return
