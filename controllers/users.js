@@ -7,11 +7,11 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFound = require('../errors/notfound');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .populate('user')
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: err._message }));
+    .catch(next);
 };
 
 // eslint-disable-next-line consistent-return

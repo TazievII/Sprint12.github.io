@@ -6,10 +6,10 @@ module.exports.getCards = (req, res) => {
     .then((cards) => {
       res.send({ data: cards });
     })
-    .catch((err) => res.status(500).send({ message: err._message }));
+    .catch((err) => res.status(500).send({ message: err.message }));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const {
     name, link, createdAt,
   } = req.body;
@@ -24,30 +24,24 @@ module.exports.createCard = (req, res) => {
         res.status(200).send({ data: card });
       } else res.status(400).send({ message: 'Некорректная ссылка на картинку' });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err._message });
-      } return res.status(500).send({ message: err._message });
-    });
+    .catch(next);
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
+    // eslint-disable-next-line consistent-return
     .then((card) => {
-      const newLocal = toString(card.owner) === toString(req.user._id);
       if (!card) {
-        res.status(404).send({ message: 'Карточка не найдена' });
-      } else if (newLocal) {
+        return res.status(404).send({ message: 'Карточка не найдена' });
+      } if (toString(card.owner) === toString(req.user._id)) {
         card.remove(req.params.cardId);
-        res.status(200).send({ message: 'Удалено' });
-      } else {
-        res.status(403).send({ message: 'Нет прав на удаление карточки' });
-      }
+        return res.status(200).send({ message: 'Удалено' });
+      } res.status(403).send({ message: 'Нет прав на удаление карточки' });
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
@@ -56,10 +50,10 @@ module.exports.likeCard = (req, res) => {
         res.send({ data: card });
       }
     })
-    .catch((err) => res.status(500).send({ message: err._message }));
+    .catch(next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
@@ -68,5 +62,5 @@ module.exports.dislikeCard = (req, res) => {
         res.send({ data: card });
       }
     })
-    .catch((err) => res.status(500).send({ message: err._message }));
+    .catch(next);
 };
