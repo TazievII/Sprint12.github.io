@@ -15,7 +15,7 @@ module.exports.getUsers = (req, res) => {
 };
 
 // eslint-disable-next-line consistent-return
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -46,7 +46,7 @@ module.exports.createUser = (req, res) => {
   }
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByEmail(email, password)
@@ -64,12 +64,10 @@ module.exports.login = (req, res) => {
         })
         .send({ message: 'Авторизация прошла успешно' });
     })
-    .catch((err) => {
-      res.status(401).send({ message: err._message });
-    });
+    .catch(next);
 };
 
-module.exports.findUser = (req, res) => {
+module.exports.findUser = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
@@ -80,23 +78,17 @@ module.exports.findUser = (req, res) => {
 };
 
 // eslint-disable-next-line consistent-return
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
   if (name.length < 2 || name.length > 30 || about.length < 2 || about.length > 30) {
     return res.send({ message: 'Недопустимое значение (от 2 до 30 символов)' });
   }
   User.findByIdAndUpdate(req.user._id, { name, about })
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: err._message });
-      } else {
-        res.status(500).send({ message: err._message });
-      }
-    });
+    .catch(next);
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar })
     .then((user) => {
@@ -104,5 +96,5 @@ module.exports.updateUserAvatar = (req, res) => {
         res.send({ data: user });
       } else res.status(400).send({ message: 'Ошибка в ссылке на аватар' });
     })
-    .catch((err) => res.status(500).send({ message: err._message }));
+    .catch(next);
 };

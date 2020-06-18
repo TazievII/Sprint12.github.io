@@ -12,7 +12,7 @@ const routes = require('./routes/routes.js');
 const { login, createUser } = require('./controllers/users');
 const { errorMiddleware } = require('./middlewares/error');
 // Слушаем 3001 порт
-const { PORT = 3010 } = process.env;
+const { PORT = 3001 } = process.env;
 
 
 const app = express();
