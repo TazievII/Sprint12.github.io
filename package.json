@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
-    "ajv": "^6.12.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "1.19.0",
     "celebrate": "^12.1.1",
