@@ -58,9 +58,10 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required(),
+    // eslint-disable-next-line no-useless-escape
+    avatar: Joi.string().pattern(/^(?:([a-z]+):(?:([a-z]*):)?\/\/)?(?:([^:@]*)(?::([^:@]*))?@)?((?:[a-z0-9_-]+\.)+[a-z]{2,}|localhost|(?:(?:[01]?\d\d?|2[0-4]\d|25[0-5])\.){3}(?:(?:[01]?\d\d?|2[0-4]\d|25[0-5])))(?::(\d+))?(?:([^:\?\#]+))?(?:\?([^\#]+))?(?:\#([^\s]+))?$/).required(),
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(6),
+    password: Joi.string().required().min(8),
   }),
 }), createUser);
 
