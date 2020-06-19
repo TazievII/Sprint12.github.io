@@ -2,10 +2,12 @@ const bcrypt = require('bcryptjs');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFound = require('../errors/notfound');
+const BatRequest = require('../errors/badrequest');
+const EmailExist = require('../errors/emailExist');
+const { ErrorMiddleware } = require('../middlewares/error');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -15,7 +17,7 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 // eslint-disable-next-line consistent-return
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -29,20 +31,27 @@ module.exports.createUser = (req, res, next) => {
         password: hash,
       }))
       .then((user) => {
-        if (validator.isURL(avatar)) {
-          res.status(201).send({
-            _id: user._id,
-            name: user.name,
-            about: user.about,
-            avatar: user.avatar,
-            email: user.email,
-          });
-          return;
-        } Promise.reject();
+        res.status(201).send({
+          _id: user._id,
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
+        });
       })
-      .catch(next);
-  } else if (password.trim().length < 8) {
-    return res.status(400).send({ message: 'Пароль не может быть менее 8 символов' });
+      .catch((err) => {
+        if (err.name === 'ValidationError') {
+          throw new BatRequest('Ошибка валидации');
+        }
+        if (err.name === 'CastError') {
+          throw new BatRequest('Неверный запрос');
+        }
+        // eslint-disable-next-line eqeqeq
+        if (err.code == '11000') {
+          throw new EmailExist('Данный email уже используется');
+        }
+        throw new ErrorMiddleware('Something happened');
+      });
   }
 };
 
@@ -80,21 +89,18 @@ module.exports.findUser = (req, res, next) => {
 // eslint-disable-next-line consistent-return
 module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
-  if (name.length < 2 || name.length > 30 || about.length < 2 || about.length > 30) {
-    return res.send({ message: 'Недопустимое значение (от 2 до 30 символов)' });
-  }
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  const opts = { runValidators: true };
+  User.findByIdAndUpdate(req.user._id, { name, about }, opts)
     .then((user) => res.send({ data: user }))
     .catch(next);
 };
 
 module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  const opts = { runValidators: true };
+  User.findByIdAndUpdate(req.user._id, { avatar }, opts)
     .then((user) => {
-      if (validator.isURL(avatar)) {
-        res.send({ data: user });
-      } else res.status(400).send({ message: 'Ошибка в ссылке на аватар' });
+      res.send({ data: user });
     })
     .catch(next);
 };

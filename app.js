@@ -10,7 +10,7 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const auth = require('./middlewares/auth');
 const routes = require('./routes/routes.js');
 const { login, createUser } = require('./controllers/users');
-const { errorMiddleware } = require('./middlewares/error');
+const { ErrorMiddleware } = require('./middlewares/error');
 // Слушаем 3001 порт
 const { PORT = 3001 } = process.env;
 
@@ -70,7 +70,7 @@ app.use('/', routes);
 app.use(errorLogger);
 app.use('*', error);
 app.use(errors());
-app.use(errorMiddleware);
+app.use(ErrorMiddleware);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console

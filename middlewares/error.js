@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const errorMiddleware = (err, req, res, next) => {
+const ErrorMiddleware = (err, req, res, next) => {
   const { code } = err;
   let { statusCode = 500, message } = err;
 
@@ -21,4 +21,4 @@ const errorMiddleware = (err, req, res, next) => {
     });
   next();
 };
-module.exports = { errorMiddleware };
+module.exports = { ErrorMiddleware };
