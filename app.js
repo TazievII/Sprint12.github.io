@@ -23,6 +23,7 @@ const limiter = rateLimit({
 });
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
@@ -63,7 +64,6 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 
-app.use(cookieParser());
 app.use(auth);
 app.use('/', routes);
 

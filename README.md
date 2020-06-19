@@ -3,7 +3,7 @@
 ### Ver. 0.1.5
 #### npm run start - запуск сервера, run dev - в режиме разработки с hotreload
 ### 84.201.169.248:80 - публичный IP
-### https://mestechko-tazievii.ml/ Доменное имя 
+### https://api.mestechko-tazievii.ml/ https://www.api.mestechko-tazievii.ml Доменное имя 
 Установлено: 
 1. Eslint
 2. Nodemon
