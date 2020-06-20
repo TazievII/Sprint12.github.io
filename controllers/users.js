@@ -17,7 +17,7 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 // eslint-disable-next-line consistent-return
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -40,18 +40,16 @@ module.exports.createUser = (req, res) => {
         });
       })
       .catch((err) => {
-        if (err.name === 'ValidationError') {
-          throw new BatRequest('Ошибка валидации');
-        }
         if (err.name === 'CastError') {
           throw new BatRequest('Неверный запрос');
         }
         // eslint-disable-next-line eqeqeq
-        if (err.code == '11000') {
+        if (err.errors.email.kind === 'unique') {
           throw new EmailExist('Данный email уже используется');
         }
         throw new ErrorMiddleware('Something happened');
-      });
+      })
+      .catch(next);
   }
 };
 
