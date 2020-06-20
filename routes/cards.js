@@ -1,11 +1,18 @@
 const cardsRouter = require('express').Router();
+const { Joi, celebrate } = require('celebrate');
 
 const {
   getCards, createCard, deleteCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
 
 cardsRouter.get('/', getCards);
-cardsRouter.post('/', createCard);
+cardsRouter.post('/', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    // eslint-disable-next-line no-useless-escape
+    link: Joi.string().pattern(/^(?:([a-z]+):(?:([a-z]*):)?\/\/)?(?:([^:@]*)(?::([^:@]*))?@)?((?:[a-z0-9_-]+\.)+[a-z]{2,}|localhost|(?:(?:[01]?\d\d?|2[0-4]\d|25[0-5])\.){3}(?:(?:[01]?\d\d?|2[0-4]\d|25[0-5])))(?::(\d+))?(?:([^:\?\#]+))?(?:\?([^\#]+))?(?:\#([^\s]+))?$/).required(),
+  }),
+}), createCard);
 cardsRouter.delete('/:cardId', deleteCard);
 cardsRouter.put('/:cardId/likes', likeCard);
 cardsRouter.delete('/:cardId/likes', dislikeCard);
