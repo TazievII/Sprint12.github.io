@@ -29,9 +29,8 @@ module.exports.deleteCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         throw new NotFound('Карточки нет по указанному id');
-      } if (card.owner === toString(req.user._id)) {
-        card.remove(req.params.cardId);
-        return res.status(200).send({ message: 'Удалено' });
+      } if (card.owner._id.toString() === req.user._id) {
+        return card.remove(req.params.cardId).then(() => res.status(200).send({ message: 'Удалено' }));
       } throw new NonAuth('Недостаточно прав');
     })
     .catch(next);
