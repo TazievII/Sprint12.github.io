@@ -3,7 +3,7 @@ const { Joi, celebrate } = require('celebrate');
 const {
   getUsers, findUser, updateUser, updateUserAvatar,
 } = require('../controllers/users');
-const { urlValidate } = require('../controllers/cards');
+const { urlValidate } = require('../middlewares/isURL');
 
 usersRouter.get('/', getUsers);
 usersRouter.get('/:id', celebrate({

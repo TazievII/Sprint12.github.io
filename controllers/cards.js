@@ -1,9 +1,6 @@
-const isURL = require('validator/lib/isURL');
 const Card = require('../models/card');
 const NotFound = require('../errors/notfound');
 const Forbidden = require('../errors/forbidden');
-const BadRequest = require('../errors/badrequest');
-const error = require('../middlewares/error');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -61,11 +58,4 @@ module.exports.dislikeCard = (req, res, next) => {
       }
     })
     .catch(next);
-};
-
-module.exports.urlValidate = (v) => {
-  const link = isURL(v);
-  if (link !== true) {
-    throw new BadRequest('Ошибка валидации ссылки');
-  } else return v;
 };

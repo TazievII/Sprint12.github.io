@@ -11,7 +11,7 @@ const auth = require('./middlewares/auth');
 const routes = require('./routes/routes.js');
 const { login, createUser } = require('./controllers/users');
 const { ErrorMiddleware } = require('./middlewares/error');
-const { urlValidate } = require('./controllers/cards');
+const { urlValidate } = require('./middlewares/isURL');
 // Слушаем 3001 порт
 const { PORT = 3001 } = process.env;
 
