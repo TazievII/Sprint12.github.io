@@ -32,12 +32,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-const error = (req, res, next) => {
-  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
-
-  next();
-};
-
 app.use(limiter);
 app.use(helmet());
 app.use(requestLogger);
@@ -69,7 +63,6 @@ app.use(auth);
 app.use('/', routes);
 
 app.use(errorLogger);
-app.use('*', error);
 app.use(errors());
 app.use(ErrorMiddleware);
 
