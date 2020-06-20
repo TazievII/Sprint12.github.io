@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 const NotFound = require('../errors/notfound');
-const NonAuth = require('../errors/NonAuth');
+const Forbidden = require('../errors/forbidden');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -31,7 +31,7 @@ module.exports.deleteCard = (req, res, next) => {
         throw new NotFound('Карточки нет по указанному id');
       } if (card.owner._id.toString() === req.user._id) {
         return card.remove(req.params.cardId).then(() => res.status(200).send({ message: 'Удалено' }));
-      } throw new NonAuth('Недостаточно прав');
+      } throw new Forbidden('Недостаточно прав');
     })
     .catch(next);
 };
