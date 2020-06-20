@@ -7,7 +7,6 @@ const User = require('../models/user');
 const NotFound = require('../errors/notfound');
 const BatRequest = require('../errors/badrequest');
 const EmailExist = require('../errors/emailExist');
-const { ErrorMiddleware } = require('../middlewares/error');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -46,7 +45,6 @@ module.exports.createUser = (req, res, next) => {
       if (err.errors.email.kind === 'unique') {
         throw new EmailExist('Данный email уже используется');
       }
-      throw new ErrorMiddleware();
     })
     .catch(next);
 };
