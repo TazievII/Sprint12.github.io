@@ -11,6 +11,7 @@ const auth = require('./middlewares/auth');
 const routes = require('./routes/routes.js');
 const { login, createUser } = require('./controllers/users');
 const { ErrorMiddleware } = require('./middlewares/error');
+const { urlValidate } = require('./controllers/cards');
 // Слушаем 3001 порт
 const { PORT = 3001 } = process.env;
 
@@ -53,7 +54,7 @@ app.post('/signup', celebrate({
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
     // eslint-disable-next-line no-useless-escape
-    avatar: Joi.string().pattern(/^(?:([a-z]+):(?:([a-z]*):)?\/\/)?(?:([^:@]*)(?::([^:@]*))?@)?((?:[a-z0-9_-]+\.)+[a-z]{2,}|localhost|(?:(?:[01]?\d\d?|2[0-4]\d|25[0-5])\.){3}(?:(?:[01]?\d\d?|2[0-4]\d|25[0-5])))(?::(\d+))?(?:([^:\?\#]+))?(?:\?([^\#]+))?(?:\#([^\s]+))?$/).required(),
+    avatar: Joi.string().custom(urlValidate, 'urlValidator').required(),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),

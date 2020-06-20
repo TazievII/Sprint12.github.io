@@ -21,36 +21,34 @@ module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (password.trim().length >= 8) {
-    bcrypt.hash(password, 10)
-      .then((hash) => User.create({
-        name,
-        about,
-        avatar,
-        email,
-        password: hash,
-      }))
-      .then((user) => {
-        res.status(201).send({
-          _id: user._id,
-          name: user.name,
-          about: user.about,
-          avatar: user.avatar,
-          email: user.email,
-        });
-      })
-      .catch((err) => {
-        if (err.name === 'CastError') {
-          throw new BatRequest('Неверный запрос');
-        }
-        // eslint-disable-next-line eqeqeq
-        if (err.errors.email.kind === 'unique') {
-          throw new EmailExist('Данный email уже используется');
-        }
-        throw new ErrorMiddleware('Something happened');
-      })
-      .catch(next);
-  }
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
+    .then((user) => {
+      res.status(201).send({
+        _id: user._id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new BatRequest('Неверный запрос');
+      }
+      // eslint-disable-next-line eqeqeq
+      if (err.errors.email.kind === 'unique') {
+        throw new EmailExist('Данный email уже используется');
+      }
+      throw new ErrorMiddleware();
+    })
+    .catch(next);
 };
 
 module.exports.login = (req, res, next) => {

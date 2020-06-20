@@ -3,7 +3,7 @@ const { Joi, celebrate } = require('celebrate');
 const {
   getUsers, findUser, updateUser, updateUserAvatar,
 } = require('../controllers/users');
-
+const { urlValidate } = require('../controllers/cards');
 
 usersRouter.get('/', getUsers);
 usersRouter.get('/:id', celebrate({
@@ -20,7 +20,7 @@ usersRouter.patch('/me', celebrate({
 usersRouter.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
     // eslint-disable-next-line no-useless-escape
-    avatar: Joi.string().pattern(/^(?:([a-z]+):(?:([a-z]*):)?\/\/)?(?:([^:@]*)(?::([^:@]*))?@)?((?:[a-z0-9_-]+\.)+[a-z]{2,}|localhost|(?:(?:[01]?\d\d?|2[0-4]\d|25[0-5])\.){3}(?:(?:[01]?\d\d?|2[0-4]\d|25[0-5])))(?::(\d+))?(?:([^:\?\#]+))?(?:\?([^\#]+))?(?:\#([^\s]+))?$/).required(),
+    avatar: Joi.string().custom(urlValidate, 'urlValidator').required(),
   }),
 }), updateUserAvatar);
 
