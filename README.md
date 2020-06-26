@@ -1,7 +1,9 @@
 # Sprint12
 ## Backend
-### Ver. 0.1.1
+### Ver. 0.1.5
 #### npm run start - запуск сервера, run dev - в режиме разработки с hotreload
+### 84.201.169.248:80 - публичный IP
+### https://api.mestechko-tazievii.ml/ https://www.api.mestechko-tazievii.ml Доменное имя 
 Установлено: 
 1. Eslint
 2. Nodemon

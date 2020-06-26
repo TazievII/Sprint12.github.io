@@ -1,55 +1,55 @@
 const bcrypt = require('bcryptjs');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
-const validator = require('validator');
+
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const NotFound = require('../errors/notfound');
+const BatRequest = require('../errors/badrequest');
+const EmailExist = require('../errors/emailExist');
 
-
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .populate('user')
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: err._message }));
+    .catch(next);
 };
 
-module.exports.createUser = (req, res) => {
+// eslint-disable-next-line consistent-return
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (password.trim().length >= 8) {
-    bcrypt.hash(password, 10)
-      .then((hash) => User.create({
-        name,
-        about,
-        avatar,
-        email,
-        password: hash,
-      }))
-      .then((user) => {
-        if (validator.isURL(avatar)) {
-          res.status(201).send({
-            _id: user._id,
-            name: user.name,
-            about: user.about,
-            avatar: user.avatar,
-            email: user.email,
-          });
-        } else res.status(400).send({ message: 'Ошибка в ссылке на аватар' });
-      })
-      .catch((err) => {
-        if (err.errors.email.properties.type === 'unique') {
-          res.status(409).send({ message: 'Пользователь с таким email уже существует' });
-        } if (err.name === 'ValidationError') {
-          res.status(400).send({ message: 'Ошибка в данных' });
-        } else {
-          res.status(500).send({ message: err._message });
-        }
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
+    .then((user) => {
+      res.status(201).send({
+        _id: user._id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
       });
-  } else res.status(400).send({ message: 'Пароль слишком короткий' });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new BatRequest('Неверный запрос');
+      }
+      // eslint-disable-next-line eqeqeq
+      if (err.errors.email.kind === 'unique') {
+        throw new EmailExist('Данный email уже используется');
+      }
+    })
+    .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByEmail(email, password)
@@ -59,43 +59,42 @@ module.exports.login = (req, res) => {
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
-      res.send({ token });
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSite: true,
+        })
+        .send({ message: 'Авторизация прошла успешно' });
     })
-    .catch((err) => {
-      res.status(401).send({ message: err._message });
-    });
+    .catch(next);
 };
 
-module.exports.findUser = (req, res) => {
+module.exports.findUser = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Пользователь не найден' });
-      } else res.send({ data: user });
+        throw new NotFound('Пользователь не найден');
+      } res.send({ data: user });
     })
-    .catch((err) => res.status(500).send({ message: err._message }));
+    .catch(next);
 };
 
-module.exports.updateUser = (req, res) => {
+// eslint-disable-next-line consistent-return
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  const opts = { runValidators: true };
+  User.findByIdAndUpdate(req.user._id, { name, about }, opts)
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: err._message });
-      } else {
-        res.status(500).send({ message: err._message });
-      }
-    });
+    .catch(next);
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  const opts = { runValidators: true };
+  User.findByIdAndUpdate(req.user._id, { avatar }, opts)
     .then((user) => {
-      if (validator.isURL(avatar)) {
-        res.send({ data: user });
-      } else res.status(400).send({ message: 'Ошибка в ссылке на аватар' });
+      res.send({ data: user });
     })
-    .catch((err) => res.status(500).send({ message: err._message }));
+    .catch(next);
 };

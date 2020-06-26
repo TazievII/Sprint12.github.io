@@ -1,7 +1,9 @@
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
+const isURL = require('validator/lib/isURL');
 const uniqueValidator = require('mongoose-unique-validator');
+const NonAuth = require('../errors/NonAuth');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -19,6 +21,10 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     required: true,
+    validate: {
+      validator: (v) => isURL(v),
+      message: 'Некорректная ссылка',
+    },
   },
   email: {
     type: String,
@@ -33,21 +39,23 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 8,
+    select: false,
   },
 });
 
 userSchema.plugin(uniqueValidator);
 
+// eslint-disable-next-line func-names
 userSchema.statics.findUserByEmail = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        return Promise.reject(new NonAuth('Неправильные почта или пароль'));
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
+            return Promise.reject(new NonAuth('Неправильные почта или пароль'));
           }
           return user;
         });
